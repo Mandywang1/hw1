@@ -1,0 +1,180 @@
+//////////////////////////////////////////第二题////////////////////////////////////////////////
+
+#include "stdafx.h"
+#include <opencv2\opencv.hpp>
+#include <opencv2\dnn.hpp>
+#include <iostream>
+
+using namespace std;
+using namespace cv;
+
+int Bit[8];
+void num_Bit(int n)
+{
+	int number;
+	for (number = 0; number < 8; number++)
+	{                
+		Bit[number] = 0;
+	}
+	number = 0;
+	while (n > 0) {
+		Bit[number] = n % 2;
+		n = n / 2;
+		number++;
+	}
+}
+int main()
+{
+	string Picture_name = "G:\\图像视频处理\\第一次作业\\第二次作业\\lena.bmp";
+	Mat Input, Bit_1, Bit_2,Bit_3, Bit_4, Bit_5, Bit_6, Bit_7, Bit_8;
+	Input = imread(Picture_name);
+	cvtColor(Input, Input, CV_BGR2GRAY);
+	Bit_1.create(Input.rows, Input.cols, Input.type());
+	Bit_2.create(Input.rows, Input.cols, Input.type());
+	Bit_3.create(Input.rows, Input.cols, Input.type());
+	Bit_4.create(Input.rows, Input.cols, Input.type());
+	Bit_5.create(Input.rows, Input.cols, Input.type());
+	Bit_6.create(Input.rows, Input.cols, Input.type());
+	Bit_7.create(Input.rows, Input.cols, Input.type());
+	Bit_8.create(Input.rows, Input.cols, Input.type());
+	int i, j;
+	for (i = 0; i < Input.rows; i++) {
+		for (j = 0; j < Input.cols; j++) {
+			num_Bit(Input.ptr<uchar>(i)[j]);
+			Bit_1.ptr<uchar>(i)[j] = Bit[0];
+			Bit_2.ptr<uchar>(i)[j] = Bit[1];
+			Bit_3.ptr<uchar>(i)[j] = Bit[2];
+			Bit_4.ptr<uchar>(i)[j] = Bit[3];
+			Bit_5.ptr<uchar>(i)[j] = Bit[4];
+			Bit_6.ptr<uchar>(i)[j] = Bit[5];
+			Bit_7.ptr<uchar>(i)[j] = Bit[6];
+			Bit_8.ptr<uchar>(i)[j] = Bit[7];
+		}
+	}
+	imshow("原图", Input);
+	imshow("Bit_1", Bit_1 * 128);
+	imshow("Bit_2", Bit_2 * 128);
+	imshow("Bit_3", Bit_3 * 128);
+	imshow("Bit_4", Bit_4 * 128);
+	imshow("Bit_5", Bit_5 * 128);
+	imshow("Bit_6", Bit_6 * 128);
+	imshow("Bit_7", Bit_7 * 128);
+	imshow("Bit_8", Bit_8 * 128);
+	waitKey();
+}
+
+//////////////////////////////////////////第三题////////////////////////////////////////////////
+
+#include "stdafx.h"
+#include <opencv2\opencv.hpp>
+#include <opencv2\dnn.hpp>
+#include <iostream>
+
+using namespace std;
+using namespace cv;
+
+int main()
+{
+	string Picture_name = "G:\\图像视频处理\\第一次作业\\第二次作业\\lena.bmp";
+	Mat Input, Mean, Stddev;
+	Input = imread(Picture_name);
+	cvtColor(Input, Input, CV_BGR2GRAY);
+	meanStdDev(Input, Mean, Stddev);
+	double mean, stddev;
+	mean = Mean.at<double>(0, 0);
+	stddev = Stddev.at<double>(0, 0);
+	cout << Picture_name << "的灰度均值是：" << mean << endl;
+	cout << Picture_name << "的标准差是：" << stddev << endl;
+}
+
+//////////////////////////////////////////第四题////////////////////////////////////////////////
+
+#include "stdafx.h"
+#include <opencv2\opencv.hpp>
+#include <opencv2\dnn.hpp>
+#include <iostream>
+
+using namespace std;
+using namespace cv;
+
+int main()
+{
+	string Picture_name = "G:\\图像视频处理\\第一次作业\\第二次作业\\lena.bmp";
+	Mat Input, NN, LINEAR, CUBIC;
+	Input = imread(Picture_name);
+	cvtColor(Input, Input, CV_BGR2GRAY);
+	resize(Input,NN, Size(2048,2048),4.0,4.0, CV_INTER_NN);
+	resize(Input, LINEAR, Size(2048, 2048), 4.0, 4.0, CV_INTER_LINEAR);
+	resize(Input, CUBIC, Size(2048, 2048), 4.0, 4.0, CV_INTER_CUBIC);
+	namedWindow("近邻.bmp", 0);
+	namedWindow("双线性.bmp", 0);
+	namedWindow("三次.bmp", 0);
+	imshow("近邻.bmp", NN);
+	imshow("双线性.bmp", LINEAR);
+	imshow("三次.bmp", CUBIC);
+	waitKey();
+}
+
+//////////////////////////////////////////第五题////////////////////////////////////////////////
+
+#include "stdafx.h"
+#include <opencv2\opencv.hpp>
+#include <opencv2\dnn.hpp>
+#include <iostream>
+
+using namespace std;
+using namespace cv;
+
+
+int main()
+{	
+	string Picture_name = "G:\\图像视频处理\\第一次作业\\第二次作业\\lena.bmp";
+	string Picture_name_2 = "G:\\图像视频处理\\第一次作业\\第二次作业\\elain1.bmp";
+	Mat Input_lena,Input_elain1,Out_elain1,Out_lena, elain1_NN, elain1_LINEAR, elain1_CUBIC,lena_NN,lena_LINEAR,lena_CUBIC;
+	Input_lena = imread(Picture_name, 1);
+	Point2f Src[3];
+	Point2f Dst[3];
+	Mat w_mat(2, 3, CV_32FC1);
+	Out_lena = Mat::zeros(Input_lena.rows, Input_lena.cols, Input_lena.type());
+
+	Src[0] = Point2f(0, 0);
+	Src[1] = Point2f(Input_lena.cols - 1, 0);
+	Src[2] = Point2f(0, Input_lena.rows - 1);
+	Dst[0] = Point2f(Input_lena.cols*0.0, Input_lena.rows*0.0);
+	Dst[1] = Point2f(Input_lena.cols * 0.5, Input_lena.rows*0.0);
+	Dst[2] = Point2f(Input_lena.cols*0.5, Input_lena.rows - 1);
+
+	w_mat = getAffineTransform(Src, Dst);
+	warpAffine(Input_lena, Out_lena, w_mat, Out_lena.size());
+	Input_elain1 = imread(Picture_name_2);
+	double angle = 30;
+	Point2f center(Input_elain1.cols / 2, Input_elain1.rows / 2);
+	Mat rot = getRotationMatrix2D(center, angle, 1);
+	Rect bbox = RotatedRect(center, Input_elain1.size(), angle).boundingRect();
+
+	rot.at<double>(0, 2) += bbox.width / 2.0 - center.x;
+	rot.at<double>(1, 2) += bbox.height / 2.0 - center.y;
+
+	warpAffine(Input_elain1, Out_elain1, rot, bbox.size());
+
+	resize(Out_lena, lena_NN, Size(2048, 2048), CV_INTER_NN);
+	resize(Out_lena, lena_LINEAR, Size(2048, 2048),  CV_INTER_LINEAR);
+	resize(Out_lena, lena_CUBIC, Size(2048, 2048), CV_INTER_CUBIC);
+	resize(Out_elain1, elain1_NN, Size(2048, 2048), CV_INTER_NN);
+	resize(Out_elain1, elain1_LINEAR, Size(2048, 2048), CV_INTER_LINEAR);
+	resize(Out_elain1, elain1_CUBIC, Size(2048, 2048), CV_INTER_CUBIC);
+	namedWindow("lena近邻.bmp", 0);
+	namedWindow("lena双线性.bmp", 0);
+	namedWindow("lena三次.bmp", 0);
+	namedWindow("elain1近邻.bmp", 0);
+	namedWindow("elain1双线性.bmp", 0);
+	namedWindow("elain1三次.bmp", 0);
+	imshow("lena近邻.bmp", lena_NN);
+	imshow("lena双线性.bmp", lena_LINEAR);
+	imshow("lena三次.bmp", lena_CUBIC);
+	imshow("elain1近邻.bmp", elain1_NN);
+	imshow("elain1双线性.bmp", elain1_LINEAR);
+	imshow("elain1三次.bmp", elain1_CUBIC);
+	waitKey();
+
+}
